@@ -1,36 +1,119 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚨 Serverless Real-Time War Room Dashboard
 
-## Getting Started
+A live, interactive dashboard built for incident response, high-stakes project coordination, and real-time team collaboration. This application leverages a modern serverless architecture to ensure instant state synchronization across all connected clients without the overhead of managing custom WebSocket servers.
 
-First, run the development server:
+## ✨ Key Features
+
+* **Real-Time Synchronization:** Powered by Supabase Realtime, any database change (tasks, chat messages, incident status) is instantly broadcast to all connected clients.
+* **Edge-Ready Rendering:** Utilizes Next.js App Router and Server Components for near-instant initial page loads and zero layout shift.
+* **Secure Multi-Tenancy:** Integrated with Supabase Auth and PostgreSQL Row Level Security (RLS) to ensure users only access incidents they are authorized to view.
+* **Modern UI/UX:** Styled with Tailwind CSS and animated for a sleek, responsive, and accessible user experience.
+
+## 🛠️ Technology Stack
+
+* **Framework:** [Next.js](https://nextjs.org/) (React)
+* **Language:** [TypeScript](https://www.typescriptlang.org/)
+* **Database & Auth:** [Supabase](https://supabase.com/) (PostgreSQL)
+* **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+* **Icons:** [Lucide React](https://lucide.dev/)
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+* Node.js 18.17 or later
+* A Supabase account and project
+
+### 1. Clone the repository
+
+```bash
+git clone [https://github.com/your-username/war-room-dashboard.git](https://github.com/your-username/war-room-dashboard.git)
+cd war-room-dashboard
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+```
+
+### 3. Set up Environment Variables
+
+Create a `.env.local` file in the root directory of the project and add your Supabase credentials:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### 4. Database Setup (Supabase)
+
+Run the following SQL commands in your Supabase SQL Editor to establish the schema:
+
+```sql
+-- Create Incidents Table
+CREATE TABLE incidents (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  title TEXT NOT NULL,
+  status TEXT DEFAULT 'active',
+  severity TEXT DEFAULT 'medium',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Create Tasks Table
+CREATE TABLE tasks (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  incident_id UUID REFERENCES incidents(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  is_completed BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Create Messages Table
+CREATE TABLE messages (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  incident_id UUID REFERENCES incidents(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES auth.users(id),
+  content TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+```
+
+*Note: Make sure to enable Realtime (Insert, Update, Delete) for the `incidents`, `tasks`, and `messages` tables in your Supabase dashboard settings.*
+
+### 5. Run the Development Server
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [https://war-room-dashboard-fv2cmnx4k-devprs.vercel.app/login](https://war-room-dashboard-fv2cmnx4k-devprs.vercel.app/login) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📂 Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```text
+├── src/
+│   ├── app/                # Next.js App Router (pages, layouts, globals)
+│   │   ├── dashboard/      # Protected dashboard routes
+│   │   ├── login/          # Authentication pages
+│   │   └── ...
+│   ├── lib/                # Utility functions and configurations
+│   │   └── supabase.ts     # Supabase client initialization
+│   └── proxy.ts            # Proxy configurations
+├── public/                 # Static assets (SVGs, icons)
+├── package.json            # Project dependencies and scripts
+├── tailwind.config.ts      # Tailwind CSS configuration (if applicable)
+└── tsconfig.json           # TypeScript configuration
+```
 
-## Learn More
+## 🤝 Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📄 License
+This project is licensed under the MIT License.
