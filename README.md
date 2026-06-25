@@ -93,7 +93,7 @@ npm run dev
 yarn dev
 ```
 
-Open [https://war-room-dashboard-fv2cmnx4k-devprs.vercel.app/login](https://war-room-dashboard-fv2cmnx4k-devprs.vercel.app/login) with your browser to see the result.
+Open [https://war-room-dash.vercel.app](https://war-room-dash.vercel.app) with your browser to see the result.
 
 ## 📂 Project Structure
 
